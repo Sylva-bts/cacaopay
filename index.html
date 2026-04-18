@@ -219,14 +219,6 @@
             letter-spacing: -0.03em;
         }
 
-        .balance span {
-            display: block;
-            font-size: 0.95rem;
-            font-weight: 600;
-            opacity: 0.9;
-            margin-top: 4px;
-        }
-
         .voice-block {
             position: relative;
             margin: 0 22px 20px;
@@ -293,19 +285,6 @@
             font-weight: 700;
         }
 
-        .nav-icon {
-            width: 18px;
-            height: 18px;
-            display: grid;
-            place-items: center;
-        }
-
-        .nav-icon::before {
-            content: attr(data-icon);
-            font-size: 1rem;
-            line-height: 1;
-        }
-
         @media (max-width: 420px) {
             .grid {
                 grid-template-columns: 1fr;
@@ -333,9 +312,9 @@
             <div>
                 <p class="price-label">Prix du cacao</p>
                 <p class="price-value" id="cacao-price">Chargement...</p>
-                <p class="price-small" id="cacao-price-usd">-</p>
+                <p class="price-small" id="cacao-price-usd">Source en cours de verification...</p>
             </div>
-            <div class="price-change" id="cacao-change">-</div>
+            <div class="price-change" id="cacao-change">...</div>
         </div>
 
         <section class="grid">
@@ -398,127 +377,157 @@
         </section>
 
         <nav class="bottom-nav">
-            <div class="nav-item"><span class="nav-icon" data-icon="o"></span>Historique</div>
-            <div class="nav-item"><span class="nav-icon" data-icon="?"></span>Aide</div>
-            <div class="nav-item"><span class="nav-icon" data-icon="P"></span>Profil</div>
+            <div class="nav-item">Historique</div>
+            <div class="nav-item">Aide</div>
+            <div class="nav-item">Profil</div>
         </nav>
     </main>
+
     <script>
-    async function loadCacaoPrice() {
-    const API_KEY = "c97891eabcac4c02b9a8af29f240ecec";
-    const priceElement   = document.getElementById('cacao-price');
-    const usdElement     = document.getElementById('cacao-price-usd');
-    const changeElement  = document.getElementById('cacao-change');
-
-    const fcfaFmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
-    const usdFmt  = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    priceElement.textContent = 'Chargement...';
-    usdElement.textContent   = '...';
-    changeElement.textContent = '...';
-
-    // Symboles à essayer dans l'ordre
-    const symbols = ['CC:F', 'CACAO', 'COCOA', 'NIB'];
-
-    let priceData = null;
-    let quoteData = null;
-    let usedSymbol = null;
-
-    for (const symbol of symbols) {
-        try {
-            const encoded = encodeURIComponent(symbol);
-            const [pRes, qRes] = await Promise.all([
-                fetch(`https://api.twelvedata.com/price?symbol=${encoded}&apikey=${API_KEY}`, {
-                    signal: AbortSignal.timeout(5000)
+        function fetchJsonWithTimeout(url, timeoutMs) {
+            return Promise.race([
+                fetch(url).then(async (response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    return response.json();
                 }),
-                fetch(`https://api.twelvedata.com/quote?symbol=${encoded}&apikey=${API_KEY}`, {
-                    signal: AbortSignal.timeout(5000)
+                new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error("Delai depasse")), timeoutMs);
                 })
             ]);
-
-            const pData = await pRes.json();
-            const qData = await qRes.json();
-
-            console.log(`Tentative symbole [${symbol}] →`, pData, qData);
-
-            // Vérifie que le prix est valide (pas d'erreur API)
-            if (pData?.price && !pData?.code && !pData?.status === 'error') {
-                priceData  = pData;
-                quoteData  = qData;
-                usedSymbol = symbol;
-                break;
-            }
-        } catch (e) {
-            console.warn(`Symbole ${symbol} échoué :`, e.message);
-        }
-    }
-
-    // Si aucun symbole ne fonctionne → fallback Yahoo Finance
-    if (!priceData?.price) {
-        console.warn('Twelve Data échoué, bascule sur Yahoo Finance...');
-        try {
-            const yahooUrl  = 'https://query1.finance.yahoo.com/v8/finance/chart/CC=F?interval=1d&range=5d';
-            const proxyUrl  = `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`;
-            const res       = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
-            const data      = await res.json();
-            const meta      = data?.chart?.result?.[0]?.meta;
-
-            if (meta?.regularMarketPrice) {
-                priceData  = { price: meta.regularMarketPrice };
-                quoteData  = { previous_close: meta.previousClose ?? meta.chartPreviousClose };
-                usedSymbol = 'Yahoo (CC=F)';
-            }
-        } catch (e) {
-            console.error('Yahoo Finance aussi échoué :', e.message);
-        }
-    }
-
-    try {
-        const currentUsd      = Number(priceData?.price);
-        const previousCloseUsd = Number(quoteData?.previous_close ?? quoteData?.close ?? currentUsd);
-
-        if (!Number.isFinite(currentUsd) || currentUsd <= 0) {
-            throw new Error(`Prix invalide : ${JSON.stringify(priceData)}`);
         }
 
-        // Taux USD → FCFA via EUR
-        let rate = 600;
-        try {
-            const eurRes  = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD', {
-                signal: AbortSignal.timeout(4000)
+        async function loadCacaoPrice() {
+            const API_KEY = "c97891eabcac4c02b9a8af29f240ecec";
+            const SYMBOLS = ["CC1", "COCOA", "CC:F", "CACAO", "NIB"];
+
+            const priceElement = document.getElementById("cacao-price");
+            const usdElement = document.getElementById("cacao-price-usd");
+            const changeElement = document.getElementById("cacao-change");
+
+            const fcfaFmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+            const usdFmt = new Intl.NumberFormat("fr-FR", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             });
-            const eurData = await eurRes.json();
-            const usdPerEur = eurData?.rates?.USD;
-            if (usdPerEur > 0) rate = 655.957 / usdPerEur;
-        } catch {
-            console.warn('Taux EUR/USD indispo, taux de secours utilisé (600)');
+
+            priceElement.textContent = "Chargement...";
+            usdElement.textContent = "Recherche du symbole cacao...";
+            changeElement.textContent = "...";
+            changeElement.classList.remove("negative");
+
+            let priceData = null;
+            let quoteData = null;
+            let usedSymbol = null;
+            let lastError = null;
+
+            for (const symbol of SYMBOLS) {
+                try {
+                    const encodedSymbol = encodeURIComponent(symbol);
+                    const [candidatePrice, candidateQuote] = await Promise.all([
+                        fetchJsonWithTimeout(`https://api.twelvedata.com/price?symbol=${encodedSymbol}&apikey=${API_KEY}`, 7000),
+                        fetchJsonWithTimeout(`https://api.twelvedata.com/quote?symbol=${encodedSymbol}&apikey=${API_KEY}`, 7000)
+                    ]);
+
+                    if (candidatePrice?.status === "error") {
+                        throw new Error(candidatePrice.message || `Prix indisponible pour ${symbol}`);
+                    }
+
+                    if (candidateQuote?.status === "error") {
+                        throw new Error(candidateQuote.message || `Quote indisponible pour ${symbol}`);
+                    }
+
+                    const currentUsd = Number(candidatePrice?.price);
+                    if (!Number.isFinite(currentUsd) || currentUsd <= 0) {
+                        throw new Error(`Prix invalide pour ${symbol}`);
+                    }
+
+                    priceData = candidatePrice;
+                    quoteData = candidateQuote;
+                    usedSymbol = symbol;
+                    break;
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`Symbole ${symbol} echoue:`, error.message);
+                }
+            }
+
+            if (!priceData?.price) {
+                const yahooUrl = "https://query1.finance.yahoo.com/v8/finance/chart/CC=F?interval=1d&range=5d";
+                const proxies = [
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(yahooUrl)}`
+                ];
+
+                for (const proxyUrl of proxies) {
+                    try {
+                        const data = await fetchJsonWithTimeout(proxyUrl, 8000);
+                        const meta = data?.chart?.result?.[0]?.meta;
+
+                        if (meta?.regularMarketPrice) {
+                            priceData = { price: meta.regularMarketPrice };
+                            quoteData = { previous_close: meta.previousClose ?? meta.chartPreviousClose ?? meta.regularMarketPrice };
+                            usedSymbol = "Yahoo CC=F";
+                            break;
+                        }
+                    } catch (error) {
+                        lastError = error;
+                    }
+                }
+            }
+
+            try {
+                const currentUsd = Number(priceData?.price);
+                const previousCloseUsd = Number(quoteData?.previous_close ?? quoteData?.close ?? currentUsd);
+
+                if (!Number.isFinite(currentUsd) || currentUsd <= 0) {
+                    throw lastError || new Error("Aucune source valide n'a renvoye de prix.");
+                }
+
+                let usdToFcfaRate = 600;
+
+                try {
+                    const eurData = await fetchJsonWithTimeout("https://api.frankfurter.app/latest?from=EUR&to=USD", 6000);
+                    const usdPerEur = Number(eurData?.rates?.USD);
+
+                    if (Number.isFinite(usdPerEur) && usdPerEur > 0) {
+                        usdToFcfaRate = 655.957 / usdPerEur;
+                    }
+                } catch {
+                    console.warn("Taux EUR/USD indisponible, taux de secours utilise.");
+                }
+
+                const currentFcfa = currentUsd * usdToFcfaRate;
+                const previousFcfa = Number.isFinite(previousCloseUsd) && previousCloseUsd > 0
+                    ? previousCloseUsd * usdToFcfaRate
+                    : null;
+                const variationFcfa = previousFcfa ? currentFcfa - previousFcfa : null;
+                const percentage = previousFcfa ? (variationFcfa / previousFcfa) * 100 : null;
+                const isPositive = variationFcfa === null ? true : variationFcfa >= 0;
+
+                priceElement.textContent = `${fcfaFmt.format(Math.round(currentFcfa))} FCFA`;
+                usdElement.textContent = `${usdFmt.format(currentUsd)} par tonne - source: ${usedSymbol}`;
+
+                if (variationFcfa === null || percentage === null) {
+                    changeElement.textContent = "Variation indisponible";
+                } else {
+                    changeElement.textContent = `${isPositive ? "+" : "-"} ${fcfaFmt.format(Math.round(Math.abs(variationFcfa)))} FCFA (${percentage.toFixed(2)}%)`;
+                    changeElement.classList.toggle("negative", !isPositive);
+                }
+            } catch (error) {
+                priceElement.textContent = "Prix indisponible";
+                usdElement.textContent = "Aucune source valide";
+                changeElement.textContent = error.message || "Impossible de recuperer le prix du cacao";
+                changeElement.classList.add("negative");
+                console.error("Erreur loadCacaoPrice:", error.message);
+            }
         }
-
-        const currentFcfa      = currentUsd * rate;
-        const previousFcfa     = previousCloseUsd * rate;
-        const variationFcfa    = currentFcfa - previousFcfa;
-        const percentage       = previousFcfa ? (variationFcfa / previousFcfa) * 100 : 0;
-        const isPositive       = variationFcfa >= 0;
-
-        priceElement.textContent  = `${fcfaFmt.format(Math.round(currentFcfa))} FCFA`;
-        usdElement.textContent    = `${usdFmt.format(currentUsd)} USD/tonne · source: ${usedSymbol}`;
-        changeElement.textContent = `${isPositive ? '▲' : '▼'} ${fcfaFmt.format(Math.round(Math.abs(variationFcfa)))} FCFA (${percentage.toFixed(2)}%)`;
-        changeElement.classList.toggle('negative', !isPositive);
-        changeElement.classList.toggle('positive', isPositive);
-
-    } catch (error) {
-        priceElement.textContent  = 'Erreur de chargement';
-        usdElement.textContent    = '—';
-        changeElement.textContent = 'Impossible de récupérer le prix';
-        changeElement.classList.add('negative');
-        console.error('Erreur loadCacaoPrice:', error.message);
-    }
-}
-
-loadCacaoPrice();
-setInterval(loadCacaoPrice, 60000);
 
         loadCacaoPrice();
+        setInterval(loadCacaoPrice, 60000);
 
         function speech1() {
             const u = new SpeechSynthesisUtterance(
