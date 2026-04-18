@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cacaopay - Accueil</title>
+    <style>
+        :root {
+            --green: #2a8a4f;
+            --orange: #f27300;
+            --white: #ffffff;
+            --soft: #f5efe5;
+            --text: #191919;
+            --shadow: 0 24px 48px rgba(11, 18, 15, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            min-height: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #f9f4e9 0%, #fefff7 100%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px;
+        }
+
+        .app-shell {
+            width: min(430px, 100%);
+            background: linear-gradient(180deg, #ffffff 0%, #fcfaf5 100%);
+            border-radius: 38px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(33, 33, 33, 0.05);
+        }
+
+        .top-panel {
+            position: relative;
+            padding: 22px 22px 18px;
+            background: linear-gradient(180deg, rgba(242, 115, 0, 0.12), rgba(154, 194, 113, 0.08));
+        }
+
+        .top-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.45), transparent 30%);
+            pointer-events: none;
+        }
+
+        .header {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            z-index: 1;
+        }
+
+        .price-widget {
+            margin-top: 18px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 12px 24px rgba(33, 33, 33, 0.08);
+            z-index: 1;
+        }
+
+        .price-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #54634a;
+            margin-bottom: 6px;
+        }
+
+        .price-value {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #1d1d1d;
+        }
+
+        .price-small {
+            font-size: 0.85rem;
+            color: #5e6d50;
+            margin-top: 4px;
+        }
+
+        .price-change {
+            text-align: right;
+            font-weight: 700;
+            color: #2a8a4f;
+        }
+
+        .price-change.negative {
+            color: #bf3c29;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+        }
+
+        .brand h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: lowercase;
+            letter-spacing: -0.04em;
+            color: #2f2f2f;
+        }
+
+        .header img:last-child {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .grid {
+            position: relative;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            z-index: 1;
+        }
+
+        .card {
+            border-radius: 28px;
+            min-height: 170px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            color: var(--white);
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+        }
+
+        .card.green {
+            background: linear-gradient(180deg, #339659 0%, #2c7e4f 100%);
+        }
+
+        .card.orange {
+            background: linear-gradient(180deg, #ff9138 0%, #f16500 100%);
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.22), transparent 36%);
+            pointer-events: none;
+        }
+
+        .card-header {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            z-index: 1;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            opacity: 0.92;
+        }
+
+        .card-cta {
+            font-size: 1.25rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.2);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        .icon img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .balance {
+            font-size: 1.65rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .balance span {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .voice-block {
+            position: relative;
+            margin: 0 22px 20px;
+            border-radius: 34px;
+            padding: 24px 0 14px;
+            background: #fff7eb;
+            box-shadow: 0 22px 44px rgba(242, 115, 0, 0.12);
+            display: grid;
+            place-items: center;
+        }
+
+        .voice-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0.1));
+            display: grid;
+            place-items: center;
+            box-shadow: inset 0 0 0 10px rgba(255,255,255,0.65);
+        }
+
+        .voice-button {
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            background: var(--orange);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 12px 24px rgba(242, 115, 0, 0.3);
+        }
+
+        .voice-button img {
+            width: 34px;
+            height: 34px;
+        }
+
+        .voice-label {
+            margin-top: 14px;
+            color: #3b3b3b;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .bottom-nav {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px 22px;
+        }
+
+        .nav-item {
+            flex: 1;
+            background: #f3efe4;
+            border-radius: 20px;
+            padding: 12px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #2c2c2c;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            display: grid;
+            place-items: center;
+        }
+
+        .nav-icon::before {
+            content: attr(data-icon);
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        @media (max-width: 420px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="app-shell">
+        <section class="top-panel">
+            <div class="header">
+                <div class="brand">
+                    <img src="img/iconcacao.png" alt="Logo Cacaopay">
+                    <h1>cacaopay</h1>
+                </div>
+                <img src="img/icontelephone.png" alt="Téléphone">
+            </div>
+        </section>
+
+        <div class="price-widget">
+            <div>
+                <p class="price-label">Prix du cacao</p>
+                <p class="price-value" id="cacao-price">Chargement...</p>
+                <p class="price-small" id="cacao-price-usd">—</p>
+            </div>
+            <div class="price-change" id="cacao-change">—</div>
+        </div>
+
+        <section class="grid">
+            <article class="card green">
+                <div class="card-header" onclick="speech1()" >
+                    <div>
+                        <p class="card-title">Recevoir paiement</p>
+                        <p class="card-cta">Recevoir paiement</p>
+                    </div>
+                    <div class="icon">
+                        <img src="img/RETRAIT_logo.png" alt="Recevoir paiement">
+                    </div>
+                </div>
+            </article>
+
+            <article class="card orange">
+                <div class="card-header" onclick="speech2()">
+                    <div>
+                        <p class="card-title">Mon solde</p>
+                        <p class="balance">45 000 FCFA</p>
+                    </div>
+                    <div class="icon">
+                        <img src="img/solde_logo.png" alt="Mon solde">
+                    </div>
+                </div>
+            </article>
+
+            <article class="card orange">
+                <div class="card-header" onclick="speech3()">
+                    <div>
+                        <p class="card-title">Envoyer argent</p>
+                        <p class="card-cta">Envoyer argent</p>
+                    </div>
+                    <div class="icon">
+                        <img src="img/trans_logo.png" alt="Envoyer argent">
+                    </div>
+                </div>
+            </article>
+
+            <article class="card green">
+                <div class="card-header" onclick="speech4()">
+                    <div>
+                        <p class="card-title">Payer factures</p>
+                        <p class="card-cta">Payer factures</p>
+                    </div>
+                    <div class="icon">
+                        <img src="img/fac_logo.png" alt="Payer factures">
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="voice-block">
+            <div class="voice-ring">
+                <div class="voice-button">
+                    <img src="img/Micro.png" alt="Assistant vocal">
+                </div>
+            </div>
+            <p class="voice-label">Assistant vocal</p>
+        </section>
+
+        <nav class="bottom-nav">
+            <div class="nav-item"><span class="nav-icon" data-icon="⟳"></span>Historique</div>
+            <div class="nav-item"><span class="nav-icon" data-icon="❓"></span>Aide</div>
+            <div class="nav-item"><span class="nav-icon" data-icon="👤"></span>Profil</div>
+        </nav>
+    </main>
+    <script>
+        async function loadCacaoPrice() {
+            const priceElement = document.getElementById('cacao-price');
+            const usdElement = document.getElementById('cacao-price-usd');
+            const changeElement = document.getElementById('cacao-change');
+
+            try {
+                const yahooUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/CC=F?interval=1d&range=1mo';
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`;
+                const data = await fetch(proxyUrl).then(res => {
+                    if (!res.ok) throw new Error('Erreur proxy CORS');
+                    return res.json();
+                });
+
+                const result = data.chart?.result?.[0];
+                const meta = result?.meta;
+                const quote = result?.indicators?.quote?.[0];
+
+                if (!meta || !quote) {
+                    throw new Error('Données de marché introuvables');
+                }
+
+                const currentUsd = meta.regularMarketPrice;
+                const previousCloseUsd = meta.previousClose ?? currentUsd;
+                const variationUsd = currentUsd - previousCloseUsd;
+                const percentageUsd = previousCloseUsd ? (variationUsd / previousCloseUsd) * 100 : 0;
+                const isPositive = variationUsd >= 0;
+
+                const rateData = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=XOF').then(res => {
+                    if (!res.ok) throw new Error('Erreur taux de change');
+                    return res.json();
+                });
+
+                const rate = rateData.rates?.XOF;
+                if (!rate) {
+                    throw new Error('Taux XOF introuvable');
+                }
+
+                const currentXof = currentUsd * rate;
+                const previousCloseXof = previousCloseUsd * rate;
+                const variationXof = currentXof - previousCloseXof;
+                const percentageXof = previousCloseXof ? (variationXof / previousCloseXof) * 100 : 0;
+
+                const formatNumber = value => value.toLocaleString('fr-FR', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+
+                priceElement.textContent = `${Math.round(currentXof).toLocaleString('fr-FR')} XOF`;
+                usdElement.textContent = `${formatNumber(currentUsd)} USD`;
+                changeElement.textContent = `${isPositive ? '▲' : '▼'} ${Math.round(variationXof).toLocaleString('fr-FR')} XOF (${percentageXof.toFixed(2)}%)`;
+                changeElement.classList.toggle('negative', !isPositive);
+
+                if (quote.close?.length) {
+                    const lastClose = quote.close.filter(v => typeof v === 'number');
+                    const minValue = Math.min(...lastClose) * rate;
+                    const maxValue = Math.max(...lastClose) * rate;
+                    changeElement.textContent += ` · min ${Math.round(minValue).toLocaleString('fr-FR')} / max ${Math.round(maxValue).toLocaleString('fr-FR')} XOF`;
+                }
+            } catch (error) {
+                priceElement.textContent = 'Erreur de chargement';
+                usdElement.textContent = '—';
+                changeElement.textContent = 'Impossible de récupérer le prix';
+                changeElement.classList.add('negative');
+                console.error('Erreur fetch cacao:', error);
+            }
+        }
+
+        loadCacaoPrice();
+
+        function speech1() {
+    const u = new SpeechSynthesisUtterance(
+        "Recevoir paiement. Cette option vous permet d'encaisser de l'argent depuis un autre utilisateur."
+    );
+    u.lang = "fr-FR";
+    window.speechSynthesis.cancel(); // arrête toute lecture en cours
+    window.speechSynthesis.speak(u);
+}
+
+function speech2() {
+    const u = new SpeechSynthesisUtterance(
+        "Mon solde. Consultez ici le montant disponible sur votre compte."
+    );
+    u.lang = "fr-FR";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+}
+
+function speech3() {
+    const u = new SpeechSynthesisUtterance(
+        "Envoyer de l'argent. Cette option vous permet de transférer des fonds vers un autre compte."
+    );
+    u.lang = "fr-FR";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+}
+
+function speech4() {
+    const u = new SpeechSynthesisUtterance(
+        "Payer vos factures. Réglez directement vos factures depuis cette section."
+    );
+    u.lang = "fr-FR";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+}
+    </script>
+</body>
+</html>
