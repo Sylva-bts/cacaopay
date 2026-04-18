@@ -325,7 +325,7 @@
                     <img src="img/iconcacao.png" alt="Logo Cacaopay">
                     <h1>cacaopay</h1>
                 </div>
-                <img src="img/icontelephone.png" alt="Téléphone">
+                <img src="img/icontelephone.png" alt="Telephone">
             </div>
         </section>
 
@@ -333,14 +333,14 @@
             <div>
                 <p class="price-label">Prix du cacao</p>
                 <p class="price-value" id="cacao-price">Chargement...</p>
-                <p class="price-small" id="cacao-price-usd">—</p>
+                <p class="price-small" id="cacao-price-usd">-</p>
             </div>
-            <div class="price-change" id="cacao-change">—</div>
+            <div class="price-change" id="cacao-change">-</div>
         </div>
 
         <section class="grid">
             <article class="card green">
-                <div class="card-header" onclick="speech1()" >
+                <div class="card-header" onclick="speech1()">
                     <div>
                         <p class="card-title">Recevoir paiement</p>
                         <p class="card-cta">Recevoir paiement</p>
@@ -355,7 +355,7 @@
                 <div class="card-header" onclick="speech2()">
                     <div>
                         <p class="card-title">Mon solde</p>
-                        <p class="balance">45 000 FCFA</p>
+                        <p class="balance">45 000 FCFA</p>
                     </div>
                     <div class="icon">
                         <img src="img/solde_logo.png" alt="Mon solde">
@@ -398,150 +398,125 @@
         </section>
 
         <nav class="bottom-nav">
-            <div class="nav-item"><span class="nav-icon" data-icon="⟳"></span>Historique</div>
-            <div class="nav-item"><span class="nav-icon" data-icon="❓"></span>Aide</div>
-            <div class="nav-item"><span class="nav-icon" data-icon="👤"></span>Profil</div>
+            <div class="nav-item"><span class="nav-icon" data-icon="o"></span>Historique</div>
+            <div class="nav-item"><span class="nav-icon" data-icon="?"></span>Aide</div>
+            <div class="nav-item"><span class="nav-icon" data-icon="P"></span>Profil</div>
         </nav>
     </main>
     <script>
-      async function loadCacaoPrice() {
-    const priceElement = document.getElementById('cacao-price');
-    const usdElement = document.getElementById('cacao-price-usd');
-    const changeElement = document.getElementById('cacao-change');
+        async function loadCacaoPrice() {
+            const API_KEY = "c97891eabcac4c02b9a8af29f240ecec";
+            const priceElement = document.getElementById('cacao-price');
+            const usdElement = document.getElementById('cacao-price-usd');
+            const changeElement = document.getElementById('cacao-change');
 
-    // Indicateur de chargement
-    priceElement.textContent = 'Chargement...';
-    usdElement.textContent = '...';
-    changeElement.textContent = '...';
+            const fcfaFormatter = new Intl.NumberFormat('fr-FR', {
+                maximumFractionDigits: 0
+            });
 
-    try {
-        // 1. Récupérer le prix du cacao via plusieurs proxies en fallback
-        const yahooUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/CC=F?interval=1d&range=1mo';
+            const usdFormatter = new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
 
-        const proxies = [
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`,
-            `https://corsproxy.io/?${encodeURIComponent(yahooUrl)}`,
-            `https://proxy.cors.sh/${yahooUrl}`
-        ];
+            priceElement.textContent = 'Chargement...';
+            usdElement.textContent = '...';
+            changeElement.textContent = '...';
 
-        let data = null;
-        for (const proxyUrl of proxies) {
             try {
-                const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(5000) });
-                if (!res.ok) continue;
-                data = await res.json();
-                if (data?.chart?.result?.[0]) break; // proxy OK, on arrête
-            } catch {
-                continue; // proxy KO, on essaie le suivant
+                const [priceResponse, quoteResponse] = await Promise.all([
+                    fetch(`https://api.twelvedata.com/price?symbol=COCOA&apikey=${API_KEY}`, {
+                        signal: AbortSignal.timeout(5000)
+                    }),
+                    fetch(`https://api.twelvedata.com/quote?symbol=COCOA&apikey=${API_KEY}`, {
+                        signal: AbortSignal.timeout(5000)
+                    })
+                ]);
+
+                const priceData = await priceResponse.json();
+                const quoteData = await quoteResponse.json();
+
+                const currentUsd = Number(priceData?.price);
+                const previousCloseUsd = Number(quoteData?.previous_close ?? currentUsd);
+
+                if (!Number.isFinite(currentUsd) || !Number.isFinite(previousCloseUsd)) {
+                    throw new Error('Donnees Twelve Data invalides');
+                }
+
+                let usdToFcfaRate = 600;
+
+                try {
+                    const eurResponse = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD', {
+                        signal: AbortSignal.timeout(4000)
+                    });
+                    const eurData = await eurResponse.json();
+                    const usdPerEur = eurData?.rates?.USD;
+
+                    if (typeof usdPerEur === 'number' && usdPerEur > 0) {
+                        usdToFcfaRate = 655.957 / usdPerEur;
+                    }
+                } catch {
+                    console.warn('Taux USD vers FCFA indisponible, utilisation du taux de secours');
+                }
+
+                const currentFcfa = currentUsd * usdToFcfaRate;
+                const previousCloseFcfa = previousCloseUsd * usdToFcfaRate;
+                const variationFcfa = currentFcfa - previousCloseFcfa;
+                const percentage = previousCloseFcfa ? (variationFcfa / previousCloseFcfa) * 100 : 0;
+                const direction = variationFcfa >= 0 ? '+' : '-';
+
+                priceElement.textContent = `${fcfaFormatter.format(Math.round(currentFcfa))} FCFA`;
+                usdElement.textContent = `${usdFormatter.format(currentUsd)} par tonne`;
+                changeElement.textContent = `${direction} ${fcfaFormatter.format(Math.round(Math.abs(variationFcfa)))} FCFA (${percentage.toFixed(2)} %)`;
+                changeElement.classList.toggle('negative', variationFcfa < 0);
+            } catch (error) {
+                priceElement.textContent = 'Erreur de chargement';
+                usdElement.textContent = '-';
+                changeElement.textContent = 'Impossible de recuperer le prix du cacao en FCFA';
+                changeElement.classList.add('negative');
+                console.error('Erreur loadCacaoPrice:', error.message);
             }
         }
 
-        if (!data) throw new Error('Tous les proxies ont échoué');
-
-        // 2. Extraire les données
-        const result = data.chart?.result?.[0];
-        const meta = result?.meta;
-        const quote = result?.indicators?.quote?.[0];
-
-        if (!meta || !quote) throw new Error('Données de marché introuvables');
-
-        const currentUsd = meta.regularMarketPrice;
-        if (!currentUsd) throw new Error('Prix USD introuvable');
-
-        const previousCloseUsd = meta.previousClose ?? meta.chartPreviousClose ?? currentUsd;
-        const variationUsd = currentUsd - previousCloseUsd;
-        const isPositive = variationUsd >= 0;
-
-        // 3. Taux de change USD → XOF via EUR (taux fixe officiel 1 EUR = 655.957 XOF)
-        let rate = 600; // valeur par défaut si l'API échoue (~taux approximatif)
-
-        try {
-            const eurData = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD', {
-                signal: AbortSignal.timeout(4000)
-            }).then(res => res.json());
-
-            const usdPerEur = eurData?.rates?.USD;
-            if (usdPerEur && !Number.isNaN(usdPerEur)) {
-                rate = (1 / usdPerEur) * 655.957;
-            }
-        } catch {
-            console.warn('Taux de change indisponible, utilisation du taux approximatif');
-        }
-
-        // 4. Calculs XOF
-        const currentXof        = currentUsd * rate;
-        const previousCloseXof  = previousCloseUsd * rate;
-        const variationXof      = currentXof - previousCloseXof;
-        const percentageXof     = previousCloseXof ? (variationXof / previousCloseXof) * 100 : 0;
-
-        // 5. Formatage
-        const fmt     = v => v.toLocaleString('fr-FR', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
-        const fmtInt  = v => Math.round(v).toLocaleString('fr-FR');
-
-        // 6. Affichage
-        priceElement.textContent = `${fmtInt(currentXof)} XOF`;
-        usdElement.textContent   = `${fmt(currentUsd)} USD`;
-
-        changeElement.textContent = `${isPositive ? '▲' : '▼'} ${fmtInt(variationXof)} XOF (${percentageXof.toFixed(2)}%)`;
-        changeElement.classList.toggle('negative', !isPositive);
-        changeElement.classList.toggle('positive', isPositive);
-
-        // 7. Min / Max du mois
-        if (quote.close?.length) {
-            const closes  = quote.close.filter(v => typeof v === 'number' && v > 0);
-            if (closes.length) {
-                const minXof = Math.min(...closes) * rate;
-                const maxXof = Math.max(...closes) * rate;
-                changeElement.textContent += ` · min ${fmtInt(minXof)} / max ${fmtInt(maxXof)} XOF`;
-            }
-        }
-
-    } catch (error) {
-        priceElement.textContent    = 'Erreur de chargement';
-        usdElement.textContent      = '—';
-        changeElement.textContent   = 'Impossible de récupérer le prix du cacao';
-        changeElement.classList.add('negative');
-        console.error('Erreur loadCacaoPrice:', error.message);
-    }
-}
-
-loadCacaoPrice();
+        loadCacaoPrice();
 
         function speech1() {
-    const u = new SpeechSynthesisUtterance(
-        "Recevoir paiement. Cette option vous permet d'encaisser de l'argent depuis un autre utilisateur."
-    );
-    u.lang = "fr-FR";
-    window.speechSynthesis.cancel(); // arrête toute lecture en cours
-    window.speechSynthesis.speak(u);
-}
+            const u = new SpeechSynthesisUtterance(
+                "Recevoir paiement. Cette option vous permet d'encaisser de l'argent depuis un autre utilisateur."
+            );
+            u.lang = "fr-FR";
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(u);
+        }
 
-function speech2() {
-    const u = new SpeechSynthesisUtterance(
-        "Mon solde. Consultez ici le montant disponible sur votre compte."
-    );
-    u.lang = "fr-FR";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-}
+        function speech2() {
+            const u = new SpeechSynthesisUtterance(
+                "Mon solde. Consultez ici le montant disponible sur votre compte."
+            );
+            u.lang = "fr-FR";
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(u);
+        }
 
-function speech3() {
-    const u = new SpeechSynthesisUtterance(
-        "Envoyer de l'argent. Cette option vous permet de transférer des fonds vers un autre compte."
-    );
-    u.lang = "fr-FR";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-}
+        function speech3() {
+            const u = new SpeechSynthesisUtterance(
+                "Envoyer de l'argent. Cette option vous permet de transferer des fonds vers un autre compte."
+            );
+            u.lang = "fr-FR";
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(u);
+        }
 
-function speech4() {
-    const u = new SpeechSynthesisUtterance(
-        "Payer vos factures. Réglez directement vos factures depuis cette section."
-    );
-    u.lang = "fr-FR";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-}
+        function speech4() {
+            const u = new SpeechSynthesisUtterance(
+                "Payer vos factures. Reglez directement vos factures depuis cette section."
+            );
+            u.lang = "fr-FR";
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(u);
+        }
     </script>
 </body>
 </html>
