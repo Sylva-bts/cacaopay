@@ -404,81 +404,119 @@
         </nav>
     </main>
     <script>
-        async function loadCacaoPrice() {
-            const API_KEY = "c97891eabcac4c02b9a8af29f240ecec";
-            const priceElement = document.getElementById('cacao-price');
-            const usdElement = document.getElementById('cacao-price-usd');
-            const changeElement = document.getElementById('cacao-change');
+    async function loadCacaoPrice() {
+    const API_KEY = "c97891eabcac4c02b9a8af29f240ecec";
+    const priceElement   = document.getElementById('cacao-price');
+    const usdElement     = document.getElementById('cacao-price-usd');
+    const changeElement  = document.getElementById('cacao-change');
 
-            const fcfaFormatter = new Intl.NumberFormat('fr-FR', {
-                maximumFractionDigits: 0
-            });
+    const fcfaFmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+    const usdFmt  = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-            const usdFormatter = new Intl.NumberFormat('fr-FR', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+    priceElement.textContent = 'Chargement...';
+    usdElement.textContent   = '...';
+    changeElement.textContent = '...';
 
-            priceElement.textContent = 'Chargement...';
-            usdElement.textContent = '...';
-            changeElement.textContent = '...';
+    // Symboles à essayer dans l'ordre
+    const symbols = ['CC:F', 'CACAO', 'COCOA', 'NIB'];
 
-            try {
-                const [priceResponse, quoteResponse] = await Promise.all([
-                    fetch(`https://api.twelvedata.com/price?symbol=COCOA&apikey=${API_KEY}`, {
-                        signal: AbortSignal.timeout(5000)
-                    }),
-                    fetch(`https://api.twelvedata.com/quote?symbol=COCOA&apikey=${API_KEY}`, {
-                        signal: AbortSignal.timeout(5000)
-                    })
-                ]);
+    let priceData = null;
+    let quoteData = null;
+    let usedSymbol = null;
 
-                const priceData = await priceResponse.json();
-                const quoteData = await quoteResponse.json();
+    for (const symbol of symbols) {
+        try {
+            const encoded = encodeURIComponent(symbol);
+            const [pRes, qRes] = await Promise.all([
+                fetch(`https://api.twelvedata.com/price?symbol=${encoded}&apikey=${API_KEY}`, {
+                    signal: AbortSignal.timeout(5000)
+                }),
+                fetch(`https://api.twelvedata.com/quote?symbol=${encoded}&apikey=${API_KEY}`, {
+                    signal: AbortSignal.timeout(5000)
+                })
+            ]);
 
-                const currentUsd = Number(priceData?.price);
-                const previousCloseUsd = Number(quoteData?.previous_close ?? currentUsd);
+            const pData = await pRes.json();
+            const qData = await qRes.json();
 
-                if (!Number.isFinite(currentUsd) || !Number.isFinite(previousCloseUsd)) {
-                    throw new Error('Donnees Twelve Data invalides');
-                }
+            console.log(`Tentative symbole [${symbol}] →`, pData, qData);
 
-                let usdToFcfaRate = 600;
-
-                try {
-                    const eurResponse = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD', {
-                        signal: AbortSignal.timeout(4000)
-                    });
-                    const eurData = await eurResponse.json();
-                    const usdPerEur = eurData?.rates?.USD;
-
-                    if (typeof usdPerEur === 'number' && usdPerEur > 0) {
-                        usdToFcfaRate = 655.957 / usdPerEur;
-                    }
-                } catch {
-                    console.warn('Taux USD vers FCFA indisponible, utilisation du taux de secours');
-                }
-
-                const currentFcfa = currentUsd * usdToFcfaRate;
-                const previousCloseFcfa = previousCloseUsd * usdToFcfaRate;
-                const variationFcfa = currentFcfa - previousCloseFcfa;
-                const percentage = previousCloseFcfa ? (variationFcfa / previousCloseFcfa) * 100 : 0;
-                const direction = variationFcfa >= 0 ? '+' : '-';
-
-                priceElement.textContent = `${fcfaFormatter.format(Math.round(currentFcfa))} FCFA`;
-                usdElement.textContent = `${usdFormatter.format(currentUsd)} par tonne`;
-                changeElement.textContent = `${direction} ${fcfaFormatter.format(Math.round(Math.abs(variationFcfa)))} FCFA (${percentage.toFixed(2)} %)`;
-                changeElement.classList.toggle('negative', variationFcfa < 0);
-            } catch (error) {
-                priceElement.textContent = 'Erreur de chargement';
-                usdElement.textContent = '-';
-                changeElement.textContent = 'Impossible de recuperer le prix du cacao en FCFA';
-                changeElement.classList.add('negative');
-                console.error('Erreur loadCacaoPrice:', error.message);
+            // Vérifie que le prix est valide (pas d'erreur API)
+            if (pData?.price && !pData?.code && !pData?.status === 'error') {
+                priceData  = pData;
+                quoteData  = qData;
+                usedSymbol = symbol;
+                break;
             }
+        } catch (e) {
+            console.warn(`Symbole ${symbol} échoué :`, e.message);
         }
+    }
+
+    // Si aucun symbole ne fonctionne → fallback Yahoo Finance
+    if (!priceData?.price) {
+        console.warn('Twelve Data échoué, bascule sur Yahoo Finance...');
+        try {
+            const yahooUrl  = 'https://query1.finance.yahoo.com/v8/finance/chart/CC=F?interval=1d&range=5d';
+            const proxyUrl  = `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`;
+            const res       = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
+            const data      = await res.json();
+            const meta      = data?.chart?.result?.[0]?.meta;
+
+            if (meta?.regularMarketPrice) {
+                priceData  = { price: meta.regularMarketPrice };
+                quoteData  = { previous_close: meta.previousClose ?? meta.chartPreviousClose };
+                usedSymbol = 'Yahoo (CC=F)';
+            }
+        } catch (e) {
+            console.error('Yahoo Finance aussi échoué :', e.message);
+        }
+    }
+
+    try {
+        const currentUsd      = Number(priceData?.price);
+        const previousCloseUsd = Number(quoteData?.previous_close ?? quoteData?.close ?? currentUsd);
+
+        if (!Number.isFinite(currentUsd) || currentUsd <= 0) {
+            throw new Error(`Prix invalide : ${JSON.stringify(priceData)}`);
+        }
+
+        // Taux USD → FCFA via EUR
+        let rate = 600;
+        try {
+            const eurRes  = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD', {
+                signal: AbortSignal.timeout(4000)
+            });
+            const eurData = await eurRes.json();
+            const usdPerEur = eurData?.rates?.USD;
+            if (usdPerEur > 0) rate = 655.957 / usdPerEur;
+        } catch {
+            console.warn('Taux EUR/USD indispo, taux de secours utilisé (600)');
+        }
+
+        const currentFcfa      = currentUsd * rate;
+        const previousFcfa     = previousCloseUsd * rate;
+        const variationFcfa    = currentFcfa - previousFcfa;
+        const percentage       = previousFcfa ? (variationFcfa / previousFcfa) * 100 : 0;
+        const isPositive       = variationFcfa >= 0;
+
+        priceElement.textContent  = `${fcfaFmt.format(Math.round(currentFcfa))} FCFA`;
+        usdElement.textContent    = `${usdFmt.format(currentUsd)} USD/tonne · source: ${usedSymbol}`;
+        changeElement.textContent = `${isPositive ? '▲' : '▼'} ${fcfaFmt.format(Math.round(Math.abs(variationFcfa)))} FCFA (${percentage.toFixed(2)}%)`;
+        changeElement.classList.toggle('negative', !isPositive);
+        changeElement.classList.toggle('positive', isPositive);
+
+    } catch (error) {
+        priceElement.textContent  = 'Erreur de chargement';
+        usdElement.textContent    = '—';
+        changeElement.textContent = 'Impossible de récupérer le prix';
+        changeElement.classList.add('negative');
+        console.error('Erreur loadCacaoPrice:', error.message);
+    }
+}
+
+loadCacaoPrice();
+setInterval(loadCacaoPrice, 60000);
 
         loadCacaoPrice();
 
