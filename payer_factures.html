@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payer Factures - Cacaopay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #191919;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(242, 115, 0, 0.12), rgba(255, 102, 0, 0.08));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand img {
+            width: 45px;
+            height: 45px;
+        }
+
+        .brand h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: lowercase;
+        }
+
+        .header img:last-child {
+            width: 35px;
+            height: 35px;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #FF6600;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .tab-button {
+            padding: 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            background: #FF6600;
+            color: white;
+            border-color: #FF6600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1d1d1d;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #FF6600;
+        }
+
+        .bill-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .bill-item:hover {
+            border-color: #FF6600;
+        }
+
+        .bill-item.selected {
+            background: #e8f5e9;
+            border-color: #FF6600;
+        }
+
+        .bill-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .bill-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff3e0;
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+        }
+
+        .bill-text h4 {
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .bill-text p {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .bill-amount {
+            font-weight: 700;
+            color: #f27300;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            display: grid;
+            place-items: center;
+        }
+
+        .bill-item.selected .checkbox {
+            background: #FF6600;
+            border-color: #FF6600;
+            color: white;
+        }
+
+        .info-box {
+            background: #e8f5e9;
+            border-left: 4px solid #FF6600;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #2c5f34;
+            margin-bottom: 20px;
+        }
+
+        .total-display {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #FF6600;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1f6538;
+        }
+
+        .cancel-button {
+            background: #ddd;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .cancel-button:hover {
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="brand">
+                <img src="img/iconcacao.png" alt="Logo Cacaopay">
+                <h1>cacaopay</h1>
+            </div>
+            <img src="img/icontelephone.png" alt="Support">
+        </header>
+
+        <main class="content">
+            <h2>Payer mes factures</h2>
+            <p class="description">
+                Réglez vos factures d'électricité, d'eau ou d'internet directement depuis votre compte.
+            </p>
+
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('pending')">Factures en attente</button>
+                <button class="tab-button" onclick="switchTab('history')">Historique</button>
+            </div>
+
+            <!-- Factures en attente -->
+            <div id="pending" class="tab-content active">
+                <div class="info-box">
+                    ℹ️ Solde disponible: <strong>45 000 FCFA</strong>
+                </div>
+
+                <div class="bill-item selected" onclick="toggleBill(this)">
+                    <div class="bill-left">
+                        <div class="bill-icon">⚡</div>
+                        <div class="bill-text">
+                            <h4>Électricité (SENELEC)</h4>
+                            <p>Échéance: 30 avril 2026</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <div class="bill-amount">12 500 FCFA</div>
+                        <div class="checkbox">✓</div>
+                    </div>
+                </div>
+
+                <div class="bill-item" onclick="toggleBill(this)">
+                    <div class="bill-left">
+                        <div class="bill-icon">💧</div>
+                        <div class="bill-text">
+                            <h4>Eau (SONES)</h4>
+                            <p>Échéance: 15 mai 2026</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <div class="bill-amount">4 200 FCFA</div>
+                        <div class="checkbox"></div>
+                    </div>
+                </div>
+
+                <div class="bill-item" onclick="toggleBill(this)">
+                    <div class="bill-left">
+                        <div class="bill-icon">📡</div>
+                        <div class="bill-text">
+                            <h4>Internet (ORANGE)</h4>
+                            <p>Échéance: 25 avril 2026</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <div class="bill-amount">8 900 FCFA</div>
+                        <div class="checkbox"></div>
+                    </div>
+                </div>
+
+                <div class="total-display">
+                    <span>Total à payer:</span>
+                    <span id="total">12 500 FCFA</span>
+                </div>
+
+                <button>Confirmer le paiement</button>
+                <button class="cancel-button">Annuler</button>
+            </div>
+
+            <!-- Historique -->
+            <div id="history" class="tab-content">
+                <div class="bill-item">
+                    <div class="bill-left">
+                        <div class="bill-icon">⚡</div>
+                        <div class="bill-text">
+                            <h4>Électricité - Payée</h4>
+                            <p>17 avril 2026</p>
+                        </div>
+                    </div>
+                    <div class="bill-amount" style="color: #FF6600;">-12 500 FCFA</div>
+                </div>
+
+                <div class="bill-item">
+                    <div class="bill-left">
+                        <div class="bill-icon">💧</div>
+                        <div class="bill-text">
+                            <h4>Eau - Payée</h4>
+                            <p>10 avril 2026</p>
+                        </div>
+                    </div>
+                    <div class="bill-amount" style="color: #FF6600;">-4 200 FCFA</div>
+                </div>
+
+                <div class="bill-item">
+                    <div class="bill-left">
+                        <div class="bill-icon">📡</div>
+                        <div class="bill-text">
+                            <h4>Internet - Payée</h4>
+                            <p>25 mars 2026</p>
+                        </div>
+                    </div>
+                    <div class="bill-amount" style="color: #FF6600;">-8 900 FCFA</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Masquer tous les onglets
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Afficher l'onglet sélectionné
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleBill(element) {
+            const wasSelected = element.classList.contains('selected');
+            
+            // Décocher les autres
+            document.querySelectorAll('.bill-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // Cocher/décocher celui-ci
+            if (!wasSelected) {
+                element.classList.add('selected');
+            }
+
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const selected = document.querySelector('.bill-item.selected');
+            const amount = selected ? selected.querySelector('.bill-amount').textContent : '0 FCFA';
+            document.getElementById('total').textContent = amount;
+        }
+    </script>
+</body>
+</html>

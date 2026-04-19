@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cacaopay - Actualites cacao</title>
+    <style>
+        :root {
+            --bg: #f7efe4;
+            --panel: #fffaf2;
+            --panel-strong: #ffffff;
+            --text: #23180f;
+            --muted: #6d5b4d;
+            --green: #2f8f56;
+            --orange: #f47421;
+            --brown: #71461f;
+            --shadow: 0 24px 48px rgba(44, 24, 7, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(244, 116, 33, 0.14), transparent 24%),
+                linear-gradient(180deg, #f6ebdf 0%, #fbf7f1 100%);
+            color: var(--text);
+            padding: 18px;
+            display: flex;
+            justify-content: center;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            width: min(560px, 100%);
+            background: linear-gradient(180deg, #fffdfa 0%, #fff6ea 100%);
+            border-radius: 36px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(80, 47, 18, 0.08);
+        }
+
+        .hero {
+            position: relative;
+            padding: 24px 22px 26px;
+            background: linear-gradient(135deg, rgba(47, 143, 86, 0.14), rgba(244, 116, 33, 0.15));
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #453126;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand img {
+            width: 46px;
+            height: 46px;
+            object-fit: contain;
+        }
+
+        .brand span {
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            text-transform: lowercase;
+            font-size: 1.2rem;
+        }
+
+        .hero h1 {
+            margin-top: 22px;
+            font-size: 1.95rem;
+            line-height: 1.05;
+            letter-spacing: -0.05em;
+            max-width: 10ch;
+        }
+
+        .hero p {
+            margin-top: 12px;
+            max-width: 38ch;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .hero-meta {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hero-pill {
+            padding: 9px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.82);
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #73431c;
+        }
+
+        .content {
+            padding: 20px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .story-card {
+            background: var(--panel);
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid rgba(125, 90, 50, 0.1);
+            box-shadow: 0 14px 30px rgba(70, 38, 10, 0.08);
+        }
+
+        .story-visual {
+            height: 190px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        .story-body {
+            padding: 18px;
+        }
+
+        .story-label {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(244, 116, 33, 0.12);
+            color: #cb5a0c;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+        }
+
+        .story-body h2 {
+            font-size: 1.08rem;
+            margin-bottom: 8px;
+            color: #2b1d12;
+        }
+
+        .story-body p {
+            color: var(--muted);
+            line-height: 1.62;
+            font-size: 0.94rem;
+        }
+
+        .highlight {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 18px;
+            background: var(--panel-strong);
+            border-left: 4px solid var(--orange);
+            color: #5b4535;
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .market-box {
+            margin: 4px 20px 22px;
+            padding: 18px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #2f8f56 0%, #3f6f34 100%);
+            color: #ffffff;
+        }
+
+        .market-box h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+        }
+
+        .market-box p {
+            margin-top: 10px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        @media (max-width: 420px) {
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+
+            .story-visual {
+                height: 170px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="hero">
+            <div class="topbar">
+                <a class="back-link" href="index.html">Retour accueil</a>
+                <div class="brand">
+                    <img src="img/iconcacao.png" alt="Logo Cacaopay">
+                    <span>cacaopay</span>
+                </div>
+            </div>
+
+            <h1>Actualites sur le cacao</h1>
+            <p>Une page dediee pour suivre les conseils de saison, la meteo importante pour les parcelles, les risques sanitaires et les tendances du marche cacao.</p>
+
+            <div class="hero-meta">
+                <span class="hero-pill">Conseils</span>
+                <span class="hero-pill">Meteo</span>
+                <span class="hero-pill">Maladies</span>
+                <span class="hero-pill">Marche</span>
+            </div>
+        </section>
+
+        <section class="content">
+            <article class="story-card">
+                <div class="story-visual" aria-hidden="true">
+                    <svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f3c58d"/>
+                                <stop offset="100%" stop-color="#fff0d7"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="600" height="320" fill="url(#g1)"/>
+                        <circle cx="510" cy="78" r="42" fill="#ffd978"/>
+                        <rect x="0" y="250" width="600" height="70" fill="#8c5a2c"/>
+                        <rect x="258" y="100" width="22" height="160" rx="12" fill="#6d4422"/>
+                        <ellipse cx="220" cy="120" rx="65" ry="42" fill="#4e9f5d"/>
+                        <ellipse cx="300" cy="92" rx="72" ry="45" fill="#3f8e4d"/>
+                        <ellipse cx="370" cy="125" rx="66" ry="41" fill="#56ab66"/>
+                        <ellipse cx="305" cy="154" rx="90" ry="44" fill="#2d7c42"/>
+                        <ellipse cx="326" cy="180" rx="26" ry="45" fill="#b65e20"/>
+                        <path d="M318 138 C345 142 352 202 324 223 C299 202 292 146 318 138Z" fill="#7a2f10"/>
+                        <path d="M325 146 L325 219" stroke="#d38849" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="story-body">
+                    <span class="story-label">Conseils pratiques</span>
+                    <h2>Entretien des parcelles pendant la saison</h2>
+                    <p>Nettoyez les abords des cacaoyers, taillez les branches inutiles et retirez vite les cabosses attaquees. Une parcelle aeree seche mieux apres la pluie et limite les contaminations.</p>
+                    <div class="highlight">Conseil du moment : organisez une ronde d'inspection chaque semaine pour reperer rapidement les fruits abimes et les zones trop humides.</div>
+                </div>
+            </article>
+
+            <article class="story-card">
+                <div class="story-visual" aria-hidden="true">
+                    <svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#d8ecff"/>
+                                <stop offset="100%" stop-color="#eef7ff"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="600" height="320" fill="url(#g2)"/>
+                        <rect x="0" y="240" width="600" height="80" fill="#6a9a4b"/>
+                        <circle cx="105" cy="85" r="34" fill="#ffe48a"/>
+                        <g fill="#ffffff">
+                            <ellipse cx="290" cy="100" rx="56" ry="30"/>
+                            <ellipse cx="250" cy="112" rx="34" ry="22"/>
+                            <ellipse cx="335" cy="114" rx="36" ry="24"/>
+                        </g>
+                        <g stroke="#66a9d8" stroke-width="6" stroke-linecap="round">
+                            <line x1="258" y1="144" x2="246" y2="182"/>
+                            <line x1="290" y1="142" x2="278" y2="188"/>
+                            <line x1="324" y1="145" x2="312" y2="186"/>
+                        </g>
+                        <rect x="418" y="132" width="20" height="110" rx="10" fill="#6d4422"/>
+                        <ellipse cx="430" cy="110" rx="56" ry="30" fill="#4b9956"/>
+                        <ellipse cx="390" cy="132" rx="40" ry="25" fill="#3f8748"/>
+                        <ellipse cx="466" cy="138" rx="42" ry="26" fill="#57ab65"/>
+                    </svg>
+                </div>
+                <div class="story-body">
+                    <span class="story-label">Meteo</span>
+                    <h2>Ce qu'il faut surveiller quand il pleut beaucoup</h2>
+                    <p>Les fortes pluies favorisent l'humidite durable sous ombrage dense. Il faut surveiller le drainage, eviter les stagnations d'eau et degager les zones ou l'air circule mal autour des arbres.</p>
+                    <div class="highlight">A retenir : en periode humide, l'aeration de la plantation et le ramassage des fruits tombes sont des gestes prioritaires.</div>
+                </div>
+            </article>
+
+            <article class="story-card">
+                <div class="story-visual" aria-hidden="true">
+                    <svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ffe6cf"/>
+                                <stop offset="100%" stop-color="#fff6eb"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="600" height="320" fill="url(#g3)"/>
+                        <rect x="0" y="244" width="600" height="76" fill="#a86f37"/>
+                        <rect x="288" y="74" width="20" height="174" rx="10" fill="#6d4422"/>
+                        <ellipse cx="298" cy="82" rx="84" ry="32" fill="#3f8b4d"/>
+                        <ellipse cx="244" cy="112" rx="50" ry="28" fill="#5aac67"/>
+                        <ellipse cx="354" cy="118" rx="52" ry="30" fill="#4d9958"/>
+                        <ellipse cx="255" cy="184" rx="28" ry="48" fill="#915023"/>
+                        <ellipse cx="345" cy="174" rx="28" ry="48" fill="#8f4a1e"/>
+                        <circle cx="247" cy="156" r="8" fill="#c9d6dc"/>
+                        <circle cx="256" cy="190" r="10" fill="#dce3e8"/>
+                        <circle cx="335" cy="163" r="9" fill="#dce3e8"/>
+                        <circle cx="351" cy="197" r="11" fill="#cfd8df"/>
+                        <path d="M110 156 C132 132 158 141 176 163" stroke="#7f4119" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <circle cx="130" cy="154" r="8" fill="#241811"/>
+                        <circle cx="161" cy="151" r="8" fill="#241811"/>
+                    </svg>
+                </div>
+                <div class="story-body">
+                    <span class="story-label">Maladies et ravageurs</span>
+                    <h2>Pourriture brune, swollen shoot et attaques de mirides</h2>
+                    <p>Inspectez les cabosses noircies, les feuilles qui jaunissent anormalement et les tiges affaiblies. Les mirides, certaines chenilles et les maladies virales ou fongiques peuvent rapidement faire baisser le rendement.</p>
+                    <div class="highlight">Reflexe utile : isolez les fruits gravement atteints et demandez un avis technique local si plusieurs arbres montrent les memes symptomes.</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="market-box">
+            <h3>Point marche</h3>
+            <p>Le prix du cacao reste un repere important, mais la qualite compte aussi. Un bon sechage, un tri soigne et un stockage propre peuvent mieux valoriser la recolte au moment de la vente.</p>
+        </section>
+    </main>
+</body>
+</html>

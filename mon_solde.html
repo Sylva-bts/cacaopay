@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Solde - Cacaopay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #191919;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(242, 115, 0, 0.12), rgba(255, 102, 0, 0.08));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand img {
+            width: 45px;
+            height: 45px;
+        }
+
+        .brand h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: lowercase;
+        }
+
+        .header img:last-child {
+            width: 35px;
+            height: 35px;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #FF6600;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .balance-card {
+            background: linear-gradient(180deg, #339659 0%, #2c7e4f 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(51, 150, 89, 0.2);
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .balance-detail {
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1d1d1d;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #FF6600;
+        }
+
+        .transaction-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e8f5e9;
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+        }
+
+        .transaction-text h4 {
+            font-size: 0.95rem;
+            color: #1d1d1d;
+            margin-bottom: 3px;
+        }
+
+        .transaction-text p {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            color: #FF6600;
+        }
+
+        .transaction-amount.debit {
+            color: #bf3c29;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px;
+            background: #FF6600;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1f6538;
+        }
+
+        button.secondary {
+            background: #f27300;
+        }
+
+        button.secondary:hover {
+            background: #e65f00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="brand">
+                <img src="img/iconcacao.png" alt="Logo Cacaopay">
+                <h1>cacaopay</h1>
+            </div>
+            <img src="img/icontelephone.png" alt="Support">
+        </header>
+
+        <main class="content">
+            <h2>Mon Solde</h2>
+            <p class="description">
+                Consultez votre solde actuel et l'historique de vos transactions.
+            </p>
+
+            <div class="balance-card">
+                <div class="balance-label">Solde disponible</div>
+                <div class="balance-amount">45 000 FCFA</div>
+                <div class="balance-detail">Mis à jour à l'instant</div>
+            </div>
+
+            <div class="section-title">📋 Dernières transactions</div>
+            
+            <div class="transaction-item">
+                <div class="transaction-left">
+                    <div class="transaction-icon">💰</div>
+                    <div class="transaction-text">
+                        <h4>Paiement reçu</h4>
+                        <p>Aujourd'hui à 14:30</p>
+                    </div>
+                </div>
+                <div class="transaction-amount">+5 000 FCFA</div>
+            </div>
+
+            <div class="transaction-item">
+                <div class="transaction-left">
+                    <div class="transaction-icon">🛒</div>
+                    <div class="transaction-text">
+                        <h4>Achat marchandise</h4>
+                        <p>Hier à 09:15</p>
+                    </div>
+                </div>
+                <div class="transaction-amount debit">-2 500 FCFA</div>
+            </div>
+
+            <div class="transaction-item">
+                <div class="transaction-left">
+                    <div class="transaction-icon">💳</div>
+                    <div class="transaction-text">
+                        <h4>Virement envoyé</h4>
+                        <p>22 avril à 16:45</p>
+                    </div>
+                </div>
+                <div class="transaction-amount debit">-10 000 FCFA</div>
+            </div>
+
+            <div class="action-buttons">
+                <button>Voir l'historique</button>
+                <button class="secondary">Télécharger relevé</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
