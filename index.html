@@ -6,12 +6,16 @@
     <title>Cacaopay - Accueil</title>
     <style>
         :root {
-            --green: #FF6600;
-            --orange: #FF6600;
+            --orange: #ff7900;
+            --orange-deep: #f16f00;
+            --black: #111111;
+            --black-soft: #1c1c1c;
             --white: #ffffff;
-            --soft: #f5efe5;
+            --cream: #ffffff;
+            --line: #ffffff;
             --text: #191919;
-            --shadow: 0 24px 48px rgba(11, 18, 15, 0.14);
+            --muted: #73685c;
+            --shadow: 0 24px 60px rgba(13, 13, 13, 0.16);
         }
 
         * {
@@ -25,8 +29,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(180deg, #f9f4e9 0%, #fefff7 100%);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(255, 121, 0, 0.18), transparent 22%),
+                linear-gradient(180deg, #f1ede7 0%, #faf8f4 100%);
             color: var(--text);
             display: flex;
             justify-content: center;
@@ -41,78 +47,27 @@
 
         .app-shell {
             width: min(500px, 100%);
-            background: linear-gradient(180deg, #ffffff 0%, #fcfaf5 100%);
+            background: linear-gradient(180deg, #ffffff 0%, #fbf8f3 100%);
             border-radius: 38px;
             box-shadow: var(--shadow);
             overflow: hidden;
-            border: 1px solid rgba(33, 33, 33, 0.05);
+            border: 1px solid rgba(17, 17, 17, 0.06);
         }
 
         .top-panel {
             position: relative;
-            padding: 22px 22px 18px;
-            background: linear-gradient(180deg, rgba(242, 115, 0, 0.12), rgba(255, 102, 0, 0.08));
-        }
-
-        .top-panel::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.45), transparent 30%);
-            pointer-events: none;
+            padding: 22px 22px 24px;
+            background:
+                radial-gradient(circle at top right, rgba(255, 121, 0, 0.22), transparent 24%),
+                linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+            color: var(--white);
         }
 
         .header {
-            position: relative;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            z-index: 1;
-        }
-
-        .price-widget {
-            margin-top: 18px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 24px;
-            padding: 14px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 12px 24px rgba(33, 33, 33, 0.08);
-            z-index: 1;
-        }
-
-        .price-label {
-            font-size: 0.8rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #666666;
-            margin-bottom: 6px;
-        }
-
-        .price-value {
-            font-size: 1.35rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            color: #1d1d1d;
-        }
-
-        .price-small {
-            font-size: 0.85rem;
-            color: #666666;
-            margin-top: 4px;
-        }
-
-        .price-change {
-            text-align: right;
-            font-weight: 700;
-            color: #FF6600;
-        }
-
-        .price-change.negative {
-            color: #bf3c29;
         }
 
         .brand {
@@ -122,60 +77,248 @@
         }
 
         .brand img {
-            width: 52px;
-            height: 52px;
+            width: 64px;
+            height: 64px;
             object-fit: contain;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 7px;
+        }
+
+        .brand-copy small {
+            display: block;
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.62);
+            margin-bottom: 6px;
         }
 
         .brand h1 {
-            font-size: 1.5rem;
+            font-size: 1.55rem;
             font-weight: 800;
             text-transform: lowercase;
             letter-spacing: -0.04em;
-            color: #2f2f2f;
         }
 
-        .header img:last-child {
-            width: 42px;
-            height: 42px;
+        .support-chip {
+            width: 56px;
+            height: 56px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+        }
+
+        .support-chip img {
+            width: 30px;
+            height: 30px;
             object-fit: contain;
         }
 
-        .grid {
+        .hero-balance {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(255, 121, 0, 0.98), rgba(241, 111, 0, 0.94));
+            box-shadow: 0 16px 36px rgba(255, 121, 0, 0.22);
+        }
+
+        .hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .hero-label {
+            font-size: 0.76rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.82);
+            margin-bottom: 8px;
+        }
+
+        .hero-amount {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+        }
+
+        .hero-caption {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .hero-badge {
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: rgba(17, 17, 17, 0.18);
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        .hero-shortcuts {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .shortcut {
+            padding: 12px 10px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.16);
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .price-widget {
+            margin: -18px 22px 0;
+            background: var(--white);
+            border-radius: 24px;
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 18px 34px rgba(22, 19, 16, 0.1);
             position: relative;
-            padding: 20px;
+            z-index: 2;
+            border: 1px solid rgba(17, 17, 17, 0.05);
+        }
+
+        .price-label {
+            font-size: 0.74rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #7b6f63;
+            margin-bottom: 6px;
+        }
+
+        .price-value {
+            font-size: 1.32rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #111111;
+        }
+
+        .price-small {
+            font-size: 0.82rem;
+            color: #7b6f63;
+            margin-top: 4px;
+        }
+
+        .price-change {
+            text-align: right;
+            font-weight: 800;
+            color: var(--orange);
+            font-size: 0.9rem;
+        }
+
+        .price-change.negative {
+            color: #c14530;
+        }
+
+        .content {
+            padding: 20px 20px 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .section-title h2 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #121212;
+            letter-spacing: -0.02em;
+        }
+
+        .news-entry {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 18px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #111111 0%, #2a2a2a 100%);
+            color: #ffffff;
+            box-shadow: 0 18px 30px rgba(17, 17, 17, 0.15);
+        }
+
+        .news-entry strong {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .news-entry p {
+            font-size: 0.84rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.45;
+        }
+
+        .news-arrow {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: var(--orange);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .grid {
+            padding: 18px 20px 0;
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
-            z-index: 1;
         }
 
         .card {
+            position: relative;
             border-radius: 28px;
-            min-height: 170px;
-            padding: 18px;
+            min-height: 188px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             gap: 14px;
-            color: var(--white);
             overflow: hidden;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+            box-shadow: 0 16px 30px rgba(29, 25, 19, 0.08);
+            border: 1px solid rgba(17, 17, 17, 0.06);
         }
 
-        .card.green {
-            background: linear-gradient(180deg, #339659 0%, #2c7e4f 100%);
+        .card.light {
+            background: linear-gradient(180deg, #fffaf5 0%, #f6efe7 100%);
+            color: #111111;
+        }
+
+        .card.dark {
+            background: linear-gradient(180deg, #1e1e1e 0%, #111111 100%);
+            color: #ffffff;
         }
 
         .card.orange {
-            background: linear-gradient(180deg, #ff9138 0%, #f16500 100%);
+            background: linear-gradient(180deg, #ff8a17 0%, #ff7900 100%);
+            color: #ffffff;
         }
 
         .card::after {
-            content: '';
+            content: "";
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at top right, rgba(255,255,255,0.22), transparent 36%);
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.18), transparent 34%);
             pointer-events: none;
         }
 
@@ -188,132 +331,132 @@
             z-index: 1;
         }
 
-        .card-title {
-            font-size: 0.95rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            opacity: 0.92;
-        }
-
-        .card-cta {
-            font-size: 1.25rem;
+        .card-cta,
+        .balance {
+            font-size: 1.52rem;
             font-weight: 800;
+            letter-spacing: -0.04em;
             line-height: 1.1;
         }
 
+        .card-note {
+            font-size: 0.84rem;
+            opacity: 0.72;
+            line-height: 1.45;
+        }
+
         .icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.2);
+            width: 78px;
+            height: 78px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.14);
             display: grid;
             place-items: center;
             flex-shrink: 0;
             z-index: 1;
         }
 
-        .icon img {
-            width: 28px;
-            height: 28px;
-            object-fit: contain;
+        .card.light .icon {
+            background: rgba(17, 17, 17, 0.06);
         }
 
-        .balance {
-            font-size: 1.65rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
+        .icon img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
         }
 
         .voice-block {
             position: relative;
-            margin: 0 22px 20px;
-            border-radius: 34px;
-            padding: 24px 0 14px;
-            background: #fff7eb;
-            box-shadow: 0 22px 44px rgba(242, 115, 0, 0.12);
-            display: grid;
-            place-items: center;
+            margin: 22px 22px 20px;
+            border-radius: 30px;
+            padding: 22px 20px;
+            background: linear-gradient(135deg, #fffaf4 0%, #f7ede2 100%);
+            box-shadow: 0 18px 34px rgba(54, 36, 20, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 18px;
         }
 
         .voice-ring {
-            width: 120px;
-            height: 120px;
+            width: 112px;
+            height: 112px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0.1));
+            background: linear-gradient(180deg, #ffffff 0%, #fff1df 100%);
             display: grid;
             place-items: center;
-            box-shadow: inset 0 0 0 10px rgba(255,255,255,0.65);
+            box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.8);
+            flex-shrink: 0;
         }
 
         .voice-button {
-            width: 82px;
-            height: 82px;
+            width: 76px;
+            height: 76px;
             border-radius: 50%;
             background: var(--orange);
             display: grid;
             place-items: center;
-            box-shadow: 0 12px 24px rgba(242, 115, 0, 0.3);
+            box-shadow: 0 12px 24px rgba(255, 121, 0, 0.24);
         }
 
         .voice-button img {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
         }
 
-        .voice-label {
-            margin-top: 14px;
-            color: #3b3b3b;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+        .voice-copy strong {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 6px;
         }
 
-        .news-entry {
-            margin: 0 22px 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px 18px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, #2f8f56 0%, #ff7a1a 100%);
-            color: #ffffff;
-            font-size: 0.9rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            box-shadow: 0 16px 30px rgba(47, 143, 86, 0.18);
+        .voice-copy p {
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.5;
         }
 
         .bottom-nav {
-            display: flex;
-            gap: 12px;
-            padding: 16px 20px 22px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            padding: 0 20px 22px;
         }
 
         .nav-item {
-            flex: 1;
-            background: #f3efe4;
-            border-radius: 20px;
-            padding: 12px 10px;
+            background: #111111;
+            color: #ffffff;
+            border-radius: 18px;
+            padding: 14px 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            color: #2c2c2c;
-            font-size: 0.82rem;
+            font-size: 0.79rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            font-weight: 700;
+            font-weight: 800;
+        }
+
+        .nav-item.active {
+            background: var(--orange);
         }
 
         @media (max-width: 420px) {
-            .grid {
+            .grid,
+            .hero-shortcuts,
+            .bottom-nav {
                 grid-template-columns: 1fr;
             }
 
-            .bottom-nav {
+            .price-widget,
+            .voice-block {
                 flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .price-change {
+                text-align: left;
             }
         }
     </style>
@@ -324,9 +467,31 @@
             <div class="header">
                 <div class="brand">
                     <img src="img/iconcacao.png" alt="Logo Cacaopay">
-                    <h1>cacaopay</h1>
+                    <div class="brand-copy">
+                        <small>Mobile Money Cacao</small>
+                        <h1>cacaopay</h1>
+                    </div>
                 </div>
-                <img src="img/icontelephone.png" alt="Telephone">
+                <div class="support-chip">
+                    <img src="img/icontelephone.png" alt="Support">
+                </div>
+            </div>
+
+            <div class="hero-balance">
+                <div class="hero-top">
+                    <div>
+                        <p class="hero-label">Solde principal</p>
+                        <p class="hero-amount">45 000 FCFA</p>
+                        <p class="hero-caption">Votre compte est pret pour encaisser, envoyer et suivre vos transactions.</p>
+                    </div>
+                    <span class="hero-badge">Actif</span>
+                </div>
+
+                <div class="hero-shortcuts">
+                    <div class="shortcut">Depot</div>
+                    <div class="shortcut">Retrait</div>
+                    <div class="shortcut">Assistance</div>
+                </div>
             </div>
         </section>
 
@@ -339,56 +504,75 @@
             <div class="price-change" id="cacao-change">...</div>
         </div>
 
-        <a class="news-entry" href="actualites_cacao.html">Actualites cacao</a>
+        <section class="content">
+            <div class="section-title">
+                <h2>Actualites et campagne</h2>
+            </div>
+
+            <a class="news-entry" href="actualites_cacao.html">
+                <div>
+                    <strong>Actualites cacao</strong>
+                    <p>Conseils, meteo, maladies et tendances du marche sur une page dediee.</p>
+                </div>
+                <span class="news-arrow">+</span>
+            </a>
+        </section>
 
         <section class="grid">
-            <article class="card green">
-               <a href="recevoir_paiement.html"> <div class="card-header" onclick="speech1()">
-                    <div>
-                        <p class="card-title">Recevoir paiement</p>
-                        <p class="card-cta">Recevoir paiement</p>
+            <article class="card orange">
+                <a href="recevoir_paiement.html">
+                    <div class="card-header" onclick="speech1()">
+                        <div>
+                            <p class="card-cta">Encaisser par QR</p>
+                            <p class="card-note">Montrez votre code pour recevoir un paiement rapidement.</p>
+                        </div>
+                        <div class="icon">
+                            <img src="img/RETRAIT_logo.png" alt="Recevoir paiement">
+                        </div>
                     </div>
-                    <div class="icon">
-                        <img src="img/RETRAIT_logo.png" alt="Recevoir paiement">
-                    </div>
-                </div>
                 </a>
             </article>
 
-            <article class="card orange">
-                <a href="mon_solde.html"><div class="card-header" onclick="speech2()">
-                    <div>
-                        <p class="card-title">Mon solde</p>
-                        <p class="balance">45 000 FCFA</p>
+            <article class="card dark">
+                <a href="mon_solde.html">
+                    <div class="card-header" onclick="speech2()">
+                        <div>
+                            <p class="balance">45 000 FCFA</p>
+                            <p class="card-note">Consultez votre solde disponible et l'etat du compte.</p>
+                        </div>
+                        <div class="icon">
+                            <img src="img/solde_logo.png" alt="Mon solde">
+                        </div>
                     </div>
-                    <div class="icon">
-                        <img src="img/solde_logo.png" alt="Mon solde">
-                    </div>
-                </div></a>
+                </a>
             </article>
 
-            <article class="card orange">
-                <a href="envoyer_argent.html"><div class="card-header" onclick="speech3()">
-                    <div>
-                        <p class="card-title">Envoyer argent</p>
-                        <p class="card-cta">Envoyer argent</p>
+            <article class="card light">
+                <a href="envoyer_argent.html">
+                    <div class="card-header" onclick="speech3()">
+                        <div>
+                            <p class="card-cta">Transferer</p>
+                            <p class="card-note">Envoyez vos fonds vers un autre compte en quelques secondes.</p>
+                        </div>
+                        <div class="icon">
+                            <img src="img/trans_logo.png" alt="Envoyer argent">
+                        </div>
                     </div>
-                    <div class="icon">
-                        <img src="img/trans_logo.png" alt="Envoyer argent">
-                    </div>
-                </div></a>
+                </a>
             </article>
 
-            <article class="card green">
-                <a href="payer_factures.html"><div class="card-header" onclick="speech4()">
-                    <div>
-                        <p class="card-title">Payer factures</p>
-                        <p class="card-cta">Payer factures</p>
+            <article class="card light">
+                <a href="payer_factures.html">
+                    <div class="card-header" onclick="speech4()">
+                        <div>
+                            <p class="card-cta">Regler vos factures</p>
+                            <p class="card-note">Payez vos services sans vous deplacer depuis l'application.</p>
+                        </div>
+                        <div class="icon">
+                            <img src="img/fac_logo.png" alt="Payer factures">
+                        </div>
                     </div>
-                    <div class="icon">
-                        <img src="img/fac_logo.png" alt="Payer factures">
-                    </div>
-                </div></a>
+                </a>
             </article>
         </section>
 
@@ -398,12 +582,15 @@
                     <img src="img/Micro.png" alt="Assistant vocal">
                 </div>
             </div>
-            <p class="voice-label">Assistant vocal</p>
+            <div class="voice-copy">
+                <strong>Assistant vocal</strong>
+                <p>Utilisez la voix pour naviguer plus vite dans les services de paiement.</p>
+            </div>
         </section>
 
         <nav class="bottom-nav">
             <div class="nav-item">Historique</div>
-            <a class="nav-item" href="actualites_cacao.html">Actualites</a>
+            <a class="nav-item active" href="actualites_cacao.html">Actualites</a>
             <div class="nav-item">Profil</div>
         </nav>
     </main>
